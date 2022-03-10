@@ -1,0 +1,21 @@
+#Dodaję szczegóły dotyczące errorów w odpowiedzi HTTP
+server:
+  error:
+    include-binding-errors: always
+
+spring:
+  #Dodaję dostęp do consoli H2 i zmieniam jej ścieżkę na ./console
+  h2:
+    console:
+      enabled: true
+      path: '/console'
+
+  #Zmieniam zachowanie się bazy danych przy uruchamianiu
+  jpa:
+    hibernate:
+      #Create-drop oznacza, że baza tworzy się przy uruchamianiu i resetuje przy kolejnych
+      ddl-auto: create-drop
+
+  #Zmieniam ścieżkę z plikiem bazy danych
+  datasource:
+    url: 'jdbc:h2:file:.\TasksDB'
