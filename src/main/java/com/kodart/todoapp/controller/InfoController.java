@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class InfoController {
 
+    // Poniższa zmienna otrzymuje wartość ponieważ jest typu DataSourceProperties,
+    // które posiada adnotację @ConfigurationProperties, a adnotacja @Autowired
+    // wstrzykuje do zmiennej dataSource obiekt DataSourceProperties i udostępnia metody z tej klasy.
     private DataSourceProperties dataSource;
     private TaskConfigurationProperties myProp;
 

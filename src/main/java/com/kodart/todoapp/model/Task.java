@@ -18,7 +18,7 @@ public class Task {
     @Embedded
     private Audit audit = new Audit();
     //Poniższe adnotacje, sprawiają, że zapisujemy wszystkie taski na podstawie columny "task_group_id" do jednej grupy
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "task_group_id")
     private TaskGroup group;
 

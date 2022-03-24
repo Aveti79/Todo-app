@@ -14,12 +14,11 @@ public class TaskGroup {
     private String description;
     private boolean done;
 
-    @Embedded
-    private Audit audit = new Audit();
-    // Poniższa adnotacja sprawia, odczytujemy całą kolekcję tasków, tylko w momencie jej wywołania
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "group")
+    // Poniższa adnotacja sprawia, że pobieramy wszystkie taski z grupy i mapujemy je na obiekty Task w kolekcji,
+    // Właściwość "cascade" odpowiada, za wykonanie operacji na obiektach poniżej,
+    // a mappedBy infrotmuje Springa, że Taski w środku zostały zmapowane według columny "group"
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "group")
     private Set<Task> tasks;
-
 
     public TaskGroup() {
     }
