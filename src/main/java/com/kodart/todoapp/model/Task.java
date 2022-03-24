@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tasks")
-public class Task extends BaseAuditableEntity {
+public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -15,6 +15,12 @@ public class Task extends BaseAuditableEntity {
     private boolean done;
     private LocalDateTime deadline;
 
+    @Embedded
+    private Audit audit = new Audit();
+    //Poniższe adnotacje, sprawiają, że zapisujemy wszystkie taski na podstawie columny "task_group_id" do jednej grupy
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "task_group_id")
+    private TaskGroup group;
 
     public Task() {
     }
@@ -51,10 +57,19 @@ public class Task extends BaseAuditableEntity {
         this.deadline = deadline;
     }
 
+    TaskGroup getGroup() {
+        return group;
+    }
+
+    void setGroup(final TaskGroup group) {
+        this.group = group;
+    }
+
     public void updateFrom (final Task source) {
         description = source.description;
         done = source.done;
         deadline = source.deadline;
+        group = source.group;
     }
 
 }
