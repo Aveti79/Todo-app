@@ -15,6 +15,9 @@ public class TaskGroup extends BaseTask {
     // a mappedBy infrotmuje Springa, że Taski w środku zostały zmapowane według columny "group"
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "group")
     private Set<Task> tasks;
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    private Project project;
 
     public TaskGroup() {
     }
@@ -23,12 +26,21 @@ public class TaskGroup extends BaseTask {
         return tasks;
     }
 
-    void setTasks(final Set<Task> tasks) {
+    public void setTasks(final Set<Task> tasks) {
         this.tasks = tasks;
+    }
+
+    Project getProject() {
+        return project;
+    }
+
+    void setProject(final Project project) {
+        this.project = project;
     }
 
     public void updateFrom(TaskGroup source) {
         super.updateFrom(source);
         this.tasks = source.tasks;
+        this.project = source.project;
     }
 }
