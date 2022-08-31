@@ -1,6 +1,7 @@
 package com.kodart.todoapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.kodart.todoapp.model.event.TaskEvent;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

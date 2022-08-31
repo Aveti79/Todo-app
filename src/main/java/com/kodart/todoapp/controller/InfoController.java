@@ -21,7 +21,6 @@ public class InfoController {
         this.myProp = myProp;
     }
 
-    // Tworzę dwie metody, które pod zmapowanymi adresami będą się wykonywać i zwracać odpowiednie wartości.
     @GetMapping("/url")
     String url() {
         return dataSource.getUrl();

@@ -1,5 +1,7 @@
 package com.kodart.todoapp.model;
 
+import com.kodart.todoapp.model.event.TaskEvent;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -37,6 +39,11 @@ abstract class BaseTask {
 
     public void setDone(final boolean done) {
         this.done = done;
+    }
+
+    public TaskEvent toggle() {
+        this.done = !this.done;
+        return TaskEvent.changed((Task) this);
     }
 
     public void updateFrom (BaseTask source) {

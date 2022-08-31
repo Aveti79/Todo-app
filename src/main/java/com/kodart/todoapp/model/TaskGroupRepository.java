@@ -13,4 +13,6 @@ public interface TaskGroupRepository {
     boolean existsByDoneIsFalseAndProject_Id(Integer projectId);
 
     void delete (TaskGroup entity);
+
+    boolean existsByDescription(String description);
 }

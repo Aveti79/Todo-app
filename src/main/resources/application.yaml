@@ -21,3 +21,6 @@ management:
   endpoints:
     web:
       base-path: /status
+  metrics:
+    enable:
+      http: false

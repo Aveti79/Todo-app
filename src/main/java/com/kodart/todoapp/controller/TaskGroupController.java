@@ -23,6 +23,7 @@ import java.net.URI;
 import java.util.List;
 
 @Controller
+@IllegalExceptionsProcessing
 @RequestMapping("/groups")
 public class TaskGroupController {
 
@@ -93,15 +94,12 @@ public class TaskGroupController {
     @ResponseBody
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<List<GroupReadModel>> readAllGroups() {
-        logger.info("Exposing all task groups!");
         return ResponseEntity.ok(service.readAll());
     }
 
-    @ResponseBody
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<List<Task>> readAllTasksInGroup(@PathVariable final int id) {
-        List<Task> result = repository.findAllByGroup_Id(id);
-        return ResponseEntity.ok(result);
+    ResponseEntity<List<Task>> readAllTasksFromGroup(@PathVariable int id) {
+        return ResponseEntity.ok(repository.findAllByGroup_Id(id));
     }
 
     @ResponseBody
@@ -139,20 +137,6 @@ public class TaskGroupController {
     ResponseEntity<?> updateTaskGroup(@PathVariable int id) {
         service.toggleTaskGroup(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @ResponseBody
-    @ExceptionHandler(IllegalArgumentException.class)
-    ResponseEntity<String> handleIllegalArgument(IllegalArgumentException e) {
-        logger.info(e.getMessage());
-        return ResponseEntity.notFound().build();
-    }
-
-    @ResponseBody
-    @ExceptionHandler(IllegalStateException.class)
-    ResponseEntity<?> handleIllegalState(IllegalStateException e) {
-        logger.info(e.getMessage());
-        return ResponseEntity.badRequest().body(e.getMessage());
     }
 
 }
