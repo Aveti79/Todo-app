@@ -44,7 +44,7 @@ class TaskControllerE2ETest {
         //Dzięki tej metodzie uzyskujemy z zapytania get, pod podanym adresem obiekt Task.class
         //restTemplate.getForEntity("http://localhost:" + port + "/tasks", Task.class);
         //Jednak w tym przypadku potrzebowalibyśmy listy tasków, dlatego modyfikujemy delikatnie powyższą metodę.
-        Task[] result = restTemplate.getForObject("http://localhost:" + port + "/tasks", Task[].class);
+        Task[] result = restTemplate.getForObject("http://localhost:" + port + "/tasks/json", Task[].class);
         //then
         assertThat(result).hasSize(initial+2);
     }

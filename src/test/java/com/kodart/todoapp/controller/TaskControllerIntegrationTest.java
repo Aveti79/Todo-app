@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration")
-public class TaskContollerIntegrationTest {
+public class TaskControllerIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -43,7 +43,7 @@ public class TaskContollerIntegrationTest {
         mockMvc.perform(get("/tasks/")).andExpect(status().is2xxSuccessful());
     }
 
-    //Test sprawdzający zapisa Taska
+    //Test sprawdzający zapis Taska
     @Test
     void httpPost_returnLocation() throws Exception {
         String requestBody = "{\n" +
