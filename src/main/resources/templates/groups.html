@@ -5,13 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TodoApp : Groups</title>
     <link rel="stylesheet" href="https://igoradamenko.github.io/awsm.css/css/awsm_theme_mischka.css">
+    <link rel="stylesheet" type="text/css" href="/header_style.css">
     <style>
         .Bd {
             border: solid 1px black;
-        }
-
-        .Bdc\(red\) {
-            border-color: red !important;
         }
 
         .C\(red\) {
@@ -56,37 +53,10 @@
             pointer-events: none;
             font-size: larger;
         }
-
-        nav {
-            border-bottom: 1px solid black;
-        }
-
-        .crumbs ol {
-            list-style-type: none;
-            padding-left: 0;
-        }
-
-        .crumb {
-            display: inline-block;
-        }
-
-        .crumb a::after {
-            display: inline-block;
-            color: #000;
-            content: '>';
-            font-size: 80%;
-            font-weight: bold;
-            padding: 0 3px;
-        }
     </style>
 </head>
 <body>
-<nav class="crumbs">
-    <ol>
-        <li class="crumb"><a href="/">Home</a></li>
-        <li class="crumb"><a href="/groups">Task Groups</a></li>
-    </ol>
-</nav>
+<div th:replace="index.html :: header"></div>
 <main>
     <h1 th:if="${message != null}" th:text="${message}"></h1>
     <!--/*@thymesVar id="groups" type="java.util.List<com.kodart.todoapp.model.projection.GroupReadModel>"*/-->
@@ -108,7 +78,7 @@
             <hr class="M(0)"/>
         </dt>
         <dd>
-            <a id="tasksRef" th:href="@{/tasks.html(group=${group.id})}">
+            <a id="tasksRef" th:href="@{/tasks(group=${group.id})}">
                 <ul class="P(0)">
                     <li th:each="task : ${group.tasks}">
                         <span id="taskDesc" th:unless="${task.done}" th:text="${task.description}"></span>
@@ -129,7 +99,7 @@
             </label>
             <fieldset th:each="task, taskStat: *{tasks}">
                 <legend th:text="|Zadanie ${taskStat.index + 1}|"></legend>
-                <button type="submit" name="removeTask" th:value="${taskStat.index}" class="functionButton">
+                <button type="submit" name="removeTask" th:value="${taskStat.index}" class="functionButton" th:formaction="@{/groups#stv}">
                     <ion-icon name="trash-outline"></ion-icon>
                 </button>
                 <label style="display: inline">Opis
@@ -142,29 +112,17 @@
                 </label>
             </fieldset>
             <p>
-                <button type="submit" name="addTask">Add task</button>
+                <button type="submit" name="addTask" th:formaction="@{/groups#stv}">Add task</button>
             </p>
             <p>
                 <button type="submit">Dodaj</button>
                 <button type="reset">Wyczyść</button>
             </p>
+            <a id="stv"></a>
         </form>
     </fieldset>
 </main>
 <script>
-    function addTask() {
-        const addTaskBtn = document.getElementById("addTask");
-        const form = addTaskBtn.parentNode.parentNode;
-        console.log(addTaskBtn)
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const resp = await fetch(`groups?addTask`, {method: 'get'});
-            if (resp.ok) {
-                window.location.reload();
-            }
-        });
-    }
-
     function editTaskGroup(id) {
         const taskGroupId = id.replace('edit', '');
         const groupLabel = document.getElementById(id).parentNode;
@@ -173,8 +131,8 @@
         const form = document.createElement('form');
         form.innerHTML =
             `<input type="text" name="descriptionInput" value="${groupDescription.textContent}">
-             <button type="submit">Zapisz</button>
-             <button type="reset">Anuluj</button>`;
+             <button type="submit">Save</button>
+             <button type="reset">Cancel</button>`;
 
         groupLabel.prepend(form);
 

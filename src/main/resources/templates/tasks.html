@@ -1,35 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo App: groups</title>
     <link rel="stylesheet" href="https://igoradamenko.github.io/awsm.css/css/awsm_theme_mischka.css">
-    <style>
-        nav {
-            border-bottom: 1px solid black;
-        }
+    <link rel="stylesheet" type="text/css" href="/header_style.css">
 
+    <style>
         .C\(red\) {
             color: red;
-        }
-
-        .crumbs ol {
-            list-style-type: none;
-            padding-left: 0;
-        }
-
-        .crumb {
-            display: inline-block;
-        }
-
-        .crumb a::after {
-            display: inline-block;
-            color: #000;
-            content: '>';
-            font-size: 80%;
-            font-weight: bold;
-            padding: 0 3px;
         }
 
         .functionButton {
@@ -77,13 +57,7 @@
     </style>
 </head>
 <body>
-<nav class="crumbs">
-    <ol>
-        <li class="crumb"> <a href="/">Home</a></li>
-        <li class="crumb"> <a href="/groups">Task Groups</a></li>
-        <li class="crumb">Tasks</li>
-    </ol>
-</nav>
+<div th:replace="index.html :: header"></div>
 <main>
     <fieldset>
         <form>
@@ -101,11 +75,11 @@
     (async function() {
         // Pobieram tag <main>
         const main = document.querySelector('main');
-        // Deklaruje zmienną params i inzcjalizuję w niej URLSearchParams wsyłając zapytaniue do URL po " ? "
+        // Deklaruje zmienną params i inzcjalizuję w niej URLSearchParams wysyłając zapytanie do URL po " ? "
         const params = new URLSearchParams(location.search);
         // Deklaruje zmienną response i nadeję jej wartość przy pomocy operatora trójskładnikowego " ? "
-        // Jeżeli warunek jest spełniony zapisywane jest pozytywny Promise, w przeciwnym wypadku negatywny
-        const response = params.has('group') ? await fetch(`/groups/${params.get('group')}`) : await fetch('/tasks');
+        // Jeżeli warunek jest spełniony zapisywany jest pozytywny Promise, w przeciwnym wypadku negatywny
+        const response = params.has('group') ? await fetch(`/groups/${params.get('group')}`) : await fetch('/tasks/json');
         // Jeżeli został zwrócony pozytywny promise dla response to wykonywana jest poniższa instrukcja warunkowa
         if (response.ok) {
             // Pobieram listę tasków w formacie JSON

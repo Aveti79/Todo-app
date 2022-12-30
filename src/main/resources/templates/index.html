@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <link rel="stylesheet" href="https://igoradamenko.github.io/awsm.css/css/awsm_theme_mischka.css">
+    <link rel="stylesheet" type="text/css" href="/header_style.css">
+</head>
+<body>
+<header>
+    <nav>
+        <div>
+            <a href="/">
+                <h1>Todo App</h1>
+                <p>Doing all the things!</p>
+            </a>
+            <div sec:authorize="isAuthenticated()">Welcome <span sec:authentication="principal.name"></span>!</div>
+        </div>
+        <ul>
+            <li> <!--sec:authorize="hasRole('ROLE_ADMIN')">-->
+                <a href="/projects">Projects</a>
+            </li>
+            <li>
+                <a href="/groups">Task groups</a>
+            </li>
+            <li>
+                <a href="/tasks">Tasks</a>
+            </li>
+            <li style="float: right">
+                <a sec:authorize="isAuthenticated()" href="/logout">Logout</a>
+                <a sec:authorize="isAnonymous()" href="/login">Login</a>
+            </li>
+        </ul>
+    </nav>
+</header>
+</body>
+</html>
