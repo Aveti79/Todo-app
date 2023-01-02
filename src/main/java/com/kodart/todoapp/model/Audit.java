@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Embeddable
 class Audit {
-    // It's used by SpringMethods
+    // Używane przez Springa
     @SuppressWarnings("unused")
     private LocalDateTime createdOn;
     @SuppressWarnings("unused")

@@ -78,6 +78,8 @@ public class TestConfiguration {
             public Task save(final Task entity) {
                 int key = tasks.size() + 1;
                 try {
+                    //Mechanizm relfeksji do nadpisania prywatnego pola ID. Zastosowanie tylko na potrzeby testu.
+                    //Należy unikać używania tego sposobu w kodzie produkcyjnym.
                     var field = Task.class.getSuperclass().getDeclaredField("id");
                     field.setAccessible(true);
                     field.set(entity, key);

@@ -1,7 +1,5 @@
 package com.kodart.todoapp.controller;
 
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

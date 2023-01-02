@@ -5,6 +5,10 @@ import org.flywaydb.core.api.migration.Context;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
+/**
+ * Przykład w jaki sposób wygenerować migracje bazodanową przy wykorzystaniu klasy w Javie.
+ */
+
 public class V2__insert_example extends BaseJavaMigration {
     @Override
     public void migrate(final Context context) {

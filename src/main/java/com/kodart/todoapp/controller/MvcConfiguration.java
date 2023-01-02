@@ -7,6 +7,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Set;
 
+/**
+ * Klasa implementująca interfejs WebMvcConfigurer po pierwsze umożliwie działanie
+ * Springowych Interceptorów, dodatkowo poniższa implementacja dodatkowo automatyzuje ich dodawanie
+ * do kontekstu Springa na podstawie implementacji interfejsu HandlerInterceptor.
+ */
 @Configuration
 public class MvcConfiguration implements WebMvcConfigurer {
 
@@ -18,9 +23,6 @@ public class MvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
-        //Tym sposobem dodajemy pojedynczy interceptor, żeby to zautomatyzować trzeba skorzystać ze sposobu niżej
-        //dodając wcześniej kolekcję interceptorów i parametr w konstruktorze
-        //registry.addInterceptor(new LoggerInterceptor());
         handlerInterceptors.forEach(registry::addInterceptor);
     }
 }
