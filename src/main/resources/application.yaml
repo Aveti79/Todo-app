@@ -24,3 +24,11 @@ management:
   metrics:
     enable:
       http: false
+keycloak:
+  auth-server-url: 'http://localhost:8180'
+  realm: 'TodoApp'
+  resource: 'todo-spring-app-client'
+  public-client: true
+  principal-attribute: 'name'
+  #Wyłączone na potrzeby testów
+  enabled: false
