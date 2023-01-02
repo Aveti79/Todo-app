@@ -7,6 +7,8 @@ import com.kodart.todoapp.model.projection.ProjectWriteModel;
 import io.micrometer.core.annotation.Timed;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 @RequestMapping("/projects")
 public class ProjectController {
     private final ProjectService service;
@@ -26,9 +29,12 @@ public class ProjectController {
     }
 
     @GetMapping
-    String showProjects(Model model) {
+    String showProjects(Model model, Authentication auth) {
+        if (auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
         model.addAttribute("project", new ProjectWriteModel());
         return "projects";
+        }
+        return "index";
     }
 
     @PostMapping(params = "addStep")
@@ -51,9 +57,9 @@ public class ProjectController {
                        @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime deadline) {
         try {
             service.createGroup(id, deadline);
-            model.addAttribute("message","Dodano grupę!");
+            model.addAttribute("message", "Dodano grupę!");
         } catch (IllegalStateException | IllegalArgumentException e) {
-            model.addAttribute("message","Wystąpił błąd podczas tworzenia grupy!");
+            model.addAttribute("message", "Wystąpił błąd podczas tworzenia grupy!");
         }
         return "projects";
     }
@@ -73,7 +79,7 @@ public class ProjectController {
     }
 
     @DeleteMapping("/{id}")
-    String deleteProject (@PathVariable int id, Model model) {
+    String deleteProject(@PathVariable int id, Model model) {
         service.deleteProject(id);
         model.addAttribute("project", new ProjectWriteModel());
         model.addAttribute("projects", getProjects());
