@@ -8,8 +8,6 @@ import com.kodart.todoapp.model.TaskRepository;
 import com.kodart.todoapp.model.projection.GroupReadModel;
 import com.kodart.todoapp.model.projection.GroupTaskWriteModel;
 import com.kodart.todoapp.model.projection.GroupWriteModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -27,7 +25,6 @@ import java.util.List;
 @RequestMapping("/groups")
 public class TaskGroupController {
 
-    private static final Logger logger = LoggerFactory.getLogger(TaskController.class);
     private final TaskRepository repository;
     private final TaskGroupService service;
     private final TaskGroupRepository taskGroupRepository;
@@ -48,7 +45,6 @@ public class TaskGroupController {
     @GetMapping(produces = MediaType.TEXT_HTML_VALUE)
     String showGroups(Model model) {
         model.addAttribute("group", new GroupWriteModel());
-        model.addAttribute("groups", service.readAndSortTasksGroupsByDeadline());
         return "groups";
     }
 
