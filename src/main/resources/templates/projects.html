@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TodoApp : Projects</title>
     <link rel="stylesheet" href="https://igoradamenko.github.io/awsm.css/css/awsm_theme_mischka.css">
+    <link rel="stylesheet" type="text/css" href="/header_style.css">
     <style>
         .Bd {
             border: solid 1px black;
-        }
-        .Bdc\(red\) {
-            border-color: darkred !important;
         }
         .C\(red\) {
             color: darkred;
@@ -48,37 +46,10 @@
             pointer-events: none;
             font-size: larger;
         }
-
-        nav {
-            border-bottom: 1px solid black;
-        }
-
-        .crumbs ol {
-            list-style-type: none;
-            padding-left: 0;
-        }
-
-        .crumb {
-            display: inline-block;
-        }
-
-        .crumb a::after {
-            display: inline-block;
-            color: #000;
-            content: '>';
-            font-size: 80%;
-            font-weight: bold;
-            padding: 0 3px;
-        }
     </style>
 </head>
 <body>
-<nav class="crumbs">
-    <ol>
-        <li class="crumb"> <a href="/">Home</a></li>
-        <li class="crumb"> <a href="/projects">Projects</a></li>
-    </ol>
-</nav>
+<div th:replace="index.html :: header"></div>
 <main>
     <h1 th:if="${message != null}" th:text="${message}"></h1>
     <!--/*@thymesVar id="projects" type="java.util.List<kodart.todoapp.model.Project>"*/-->
@@ -112,7 +83,8 @@
             </label>
             <fieldset th:each="step, stepStat: *{steps}">
                 <legend th:text="|Krok ${stepStat.index + 1}|"></legend>
-                <button type="submit" name="removeStep" th:value="${stepStat.index}" class="removeButton" title="Remove step">
+                <button type="submit" name="removeStep" th:value="${stepStat.index}"  class="removeButton" title="Remove step"
+                        th:formaction="@{/projects#stv}">
                     <ion-icon name="trash-outline"></ion-icon>
                 </button>
                 <label style="display: inline">Task description
@@ -123,18 +95,15 @@
                 </label>
             </fieldset>
             <p>
-                <button type="submit" id="addStepButton" name="addStep">Add step</button>
+                <button type="submit" name="addStep" th:formaction="@{/projects#stv}">Add step</button>
             </p>
-            <p>
+            <p id="stv">
                 <button type="submit">Add project</button>
                 <button type="reset">Clear form</button>
             </p>
         </form>
     </fieldset>
 </main>
-<script>
-
-</script>
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 </body>
