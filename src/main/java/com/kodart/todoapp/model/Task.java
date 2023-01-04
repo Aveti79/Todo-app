@@ -1,5 +1,7 @@
 package com.kodart.todoapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -12,7 +14,8 @@ public class Task extends BaseTask {
     @Embedded
     private Audit audit = new Audit();
     //Poniższe adnotacje, sprawiają, że zapisujemy wszystkie taski na podstawie columny "task_group_id" do jednej grupy
-    @ManyToOne
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_group_id")
     private TaskGroup group;
 
@@ -20,8 +23,15 @@ public class Task extends BaseTask {
     }
 
     public Task(String description, LocalDateTime deadline) {
+        this(description, deadline, null);
+    }
+
+    public Task(String description, LocalDateTime deadline, TaskGroup group) {
         setDescription(description);
         this.deadline = deadline;
+        if (group!=null) {
+            this.group = group;
+        }
     }
 
     public LocalDateTime getDeadline() {
