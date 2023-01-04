@@ -9,7 +9,7 @@ public class ProjectStep {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @NotBlank(message = "Project step description can't be null.")
+    @NotBlank(message = "Project step description can't be empty.")
     private String description;
     private int daysToDeadline;
     @ManyToOne
@@ -28,7 +28,7 @@ public class ProjectStep {
         return description;
     }
 
-    void setDescription(final String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -36,7 +36,7 @@ public class ProjectStep {
         return daysToDeadline;
     }
 
-    void setDaysToDeadline(final int daysToDeadline) {
+    public void setDaysToDeadline(final int daysToDeadline) {
         this.daysToDeadline = daysToDeadline;
     }
 
@@ -44,7 +44,7 @@ public class ProjectStep {
         return project;
     }
 
-    void setProject(final Project project) {
+    public void setProject(final Project project) {
         this.project = project;
     }
 }
