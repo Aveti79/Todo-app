@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App: groups</title>
+    <link rel="stylesheet" href="https://igoradamenko.github.io/awsm.css/css/awsm.min.css">
+</head>
+<body>
+<main>
+    <fieldset>
+        <form>
+            <label>Opis
+                <input type="text" name="description" />
+            </label>
+            <label>Deadline
+                <input type="datetime-local" name="deadline" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}" />
+            </label>
+            <button type="submit">Dodaj!</button>
+        </form>
+    </fieldset>
+</main>
+<script>
+    (async function() {
+        const main = document.querySelector('main');
+        const params = new URLSearchParams(location.search);
+        const response = params.has('group') ? await fetch(`/groups/${params.get('group')}`) : await fetch('/tasks');
+        if (response.ok) {
+            const tasks = await response.json();
+            const list = document.createElement('ul');
+            tasks.forEach(task => list.appendChild(createTask(task)));
+            main.prepend(list);
+        }
+        const form = document.querySelector('form');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const resp = await fetch('/tasks', {
+                method: 'post',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    description: form.elements.description.value,
+                    deadline: form.elements.deadline.value && form.elements.deadline.value + ':00.000'
+                })
+            });
+            if (resp.ok) {
+                const taskFromServer = await resp.json();
+                document.querySelector('ul').appendChild(createTask(taskFromServer));
+                form.reset();
+            }
+        });
+
+        function createTask({ id, description, deadline, done }) {
+            const result = document.createElement('li');
+            result.innerHTML = `
+                <label>
+                    <input type="checkbox" ${done ? ' checked' : ''}/>
+                    ${description}
+                    <small>${deadline && deadline.replace('T', ' ')}</small>
+                </label>
+            `;
+            result.querySelector('input').addEventListener('click', async (e) => {
+                const response = await fetch(`/tasks/${id}`, { method: 'PATCH' });
+                if (!response.ok) {
+                    e.target.checked = !e.target.checked;
+                }
+            });
+            return result;
+        }
+    })();
+</script>
+</body>
+</html>

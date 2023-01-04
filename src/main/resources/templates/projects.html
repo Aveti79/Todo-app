@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="x-iso-8859-11">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TodoApp : Projects</title>
+    <link rel="stylesheet" href="https://igoradamenko.github.io/awsm.css/css/awsm_theme_mischka.css">
+    <style>
+        .Bd {
+            border: solid 1px black;
+        }
+        .Bdc\(red\) {
+            border-color: red !important;
+        }
+        .C\(red\) {
+            color: red;
+        }
+        .P\(0\) {
+            padding: 0;
+        }
+        .P\(10\) {
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <h1 th:if="${message != null}" th:text="${message}"></h1>
+    <!--/*@thymesVar id="projects" type="java.util.List<kodart.todoapp.model.Project>"*/-->
+    <dl th:each="project : ${projects}" class="Bd P(10)">
+        <dt th:text="${project.description}">...</dt>
+        <dd>
+            <ul class="P(0)">
+                <li th:each="step : ${project.steps}" th:text="|${step.description} (${step.daysToDeadline} dni)|">
+            </ul>
+            <form action="#" method="post" th:action="@{/projects/{projectId}(projectId=${project.id})}">
+                <label>Deadline
+                    <input name="deadline" type="datetime-local" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}" required>
+                </label>
+                <button type="submit">Utwórz taski >></button>
+            </form>
+        </dd>
+    </dl>
+    <fieldset>
+        <legend>Nowy projekt</legend>
+        <!--/*@thymesVar id="project" type="com.kodart.todoapp.model.projection.ProjectWriteModel"*/-->
+        <form action="#" method="post" th:action="@{/projects}" th:object="${project}">
+            <p class="C(red)" th:if="${#fields.hasAnyErrors()}" th:errors="*{all}"></p>
+            <label>
+                Opis
+                <input type="text" th:field="*{description}" th:errorclass="'Bdc(red)'"/>
+            </label>
+            <fieldset th:each="step, stepStat: *{steps}">
+                <legend th:text="|Krok ${stepStat.index + 1}|"></legend>
+                <label>Opis
+                    <input type="text" th:field="*{steps[__${stepStat.index}__].description}" th:errorclass="'Bdc(red)'"/>
+                </label>
+                <label>Dni do końca projektu
+                    <input type="number" th:field="*{steps[__${stepStat.index}__].daysToDeadline}" th:errorclass="'Bdc(red)'"/>
+                </label>
+            </fieldset>
+            <div>
+                <button type="submit" name="addStep">+</button>
+            </div>
+            <p>
+                <button type="submit">Dodaj</button>
+                <button type="reset">Wyczyść</button>
+            </p>
+        </form>
+    </fieldset>
+</main>
+</body>
+</html>
