@@ -1,5 +1,6 @@
 package com.kodart.todoapp.controller;
 
+import com.kodart.todoapp.logic.TaskService;
 import com.kodart.todoapp.model.Task;
 import com.kodart.todoapp.model.TaskRepository;
 import org.slf4j.Logger;
@@ -12,32 +13,38 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
+@RequestMapping("/tasks")
 class TaskController {
     private static final Logger logger = LoggerFactory.getLogger(TaskController.class);
     private final TaskRepository repository;
+    private final TaskService service;
 
-    TaskController(final TaskRepository repository) {
+    TaskController(final TaskRepository repository, final TaskService service) {
         this.repository = repository;
+        this.service = service;
     }
 
     //@RequestMapping(method = RequestMethod.GET, path = "/tasks")
-    @GetMapping(value = "/tasks", params = {"!sort", "!page", "!size"})
-    ResponseEntity<List<Task>> readAllTasks() {
+    @GetMapping(params = {"!sort", "!page", "!size"})
+    CompletableFuture<ResponseEntity<List<Task>>> readAllTasks() {
         logger.warn("Exposing all tasks!");
-        return ResponseEntity.ok(repository.findAll());
+        return service.findAllAsync().thenApply(ResponseEntity::ok);
     }
 
-    @GetMapping("/tasks")
+    @GetMapping
     ResponseEntity<List<Task>> readAllTasks(Pageable page) {
         logger.info("Custom pageable");
         return ResponseEntity.ok(repository.findAll(page).getContent());
     }
 
-    @GetMapping("/tasks/{id}")
+    @GetMapping("/{id}")
     ResponseEntity<Task> readTask(@PathVariable int id) {
         Optional<Task> taskOptional = repository.findById(id);
         if (taskOptional.isEmpty()) {
@@ -46,7 +53,22 @@ class TaskController {
         return ResponseEntity.ok(taskOptional.get());
     }
 
-    @PostMapping("/tasks")
+    @GetMapping("/search/done")
+    ResponseEntity<List<Task>> readDoneTasks(@RequestParam(defaultValue = "true") boolean state) {
+        return ResponseEntity.ok(repository.findByDone(state));
+    }
+
+    @GetMapping("/search/today")
+    ResponseEntity<List<Task>> readTodayTasks() {
+        var today = LocalDateTime.of(
+                LocalDate.now().getYear(),
+                LocalDate.now().getMonth(),
+                LocalDate.now().getDayOfMonth(),
+                23,59,59,999);
+        return ResponseEntity.ok(repository.findAllByDeadline(today));
+    }
+
+    @PostMapping
     ResponseEntity<Task> postTask(@RequestBody @Valid Task toPost) {
         Task result = repository.save(toPost);
         URI location = ServletUriComponentsBuilder
@@ -58,7 +80,7 @@ class TaskController {
     }
 
     // #Pierwszy sposób, przy wykorzystaniu mądrzejszego controllera
-    @PutMapping("/tasks/{id}")
+    @PutMapping("/{id}")
     ResponseEntity<?> updateTask(@PathVariable int id, @RequestBody @Valid Task toUpdate) {
         if (!repository.existsById(id)) {
             return ResponseEntity.notFound().build();
@@ -73,7 +95,7 @@ class TaskController {
 
     // #Drugi sposób, na wykonanie powyższej metody
     @Transactional
-    @PatchMapping("/tasks/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<?> updateTask(@PathVariable int id) {
         if (!repository.existsById(id)) {
             return ResponseEntity.notFound().build();
