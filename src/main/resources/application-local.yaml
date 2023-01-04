@@ -12,3 +12,8 @@ spring:
   #Zmieniam ścieżkę z plikiem bazy danych
   datasource:
     url: 'jdbc:h2:file:.\TasksDB'
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

@@ -2,7 +2,7 @@ server:
   #Dodaję szczegóły dotyczące errorów w odpowiedzi HTTP
   error:
     include-binding-errors: always
-
+    include-message: always
 spring:
   profiles:
     active: local
@@ -12,4 +12,8 @@ spring:
 #Tworzę własnego propertiesa
 task:
   template:
-    allow-multiple-tasks: true
+    allow-multiple-tasks: false
+management:
+  endpoints:
+    web:
+      base-path: /status
