@@ -5,6 +5,7 @@ import com.kodart.todoapp.model.Project;
 import com.kodart.todoapp.model.ProjectStep;
 import com.kodart.todoapp.model.projection.ProjectWriteModel;
 import io.micrometer.core.annotation.Timed;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,6 +24,8 @@ import java.util.List;
 @RequestMapping("/projects")
 public class ProjectController {
     private final ProjectService service;
+    @Value("${keycloak.enabled}")
+    private boolean keycloakState;
 
     public ProjectController(final ProjectService service) {
         this.service = service;
@@ -30,7 +33,7 @@ public class ProjectController {
 
     @GetMapping
     String showProjects(Model model, Authentication auth) {
-        if (auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+        if (!keycloakState || auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
         model.addAttribute("project", new ProjectWriteModel());
         return "projects";
         }

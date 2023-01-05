@@ -18,7 +18,10 @@
             <div sec:authorize="isAuthenticated()">Welcome <span sec:authentication="principal.name"></span>!</div>
         </div>
         <ul>
-            <li> <!--sec:authorize="hasRole('ROLE_ADMIN')">-->
+            <li th:if="${@environment.getProperty('keycloak.enabled')}" sec:authorize="hasRole('ROLE_ADMIN')">
+                <a href="/projects">Projects</a>
+            </li>
+            <li th:unless="${@environment.getProperty('keycloak.enabled')}">
                 <a href="/projects">Projects</a>
             </li>
             <li>
