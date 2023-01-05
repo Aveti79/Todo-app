@@ -13,6 +13,7 @@ public class GroupReadModel {
 
     private int id;
     private String description;
+    private boolean done;
     /**
      * Deadline from the latest task in group
      */
@@ -27,6 +28,7 @@ public class GroupReadModel {
                 .filter(Objects::nonNull)
                 .max(LocalDateTime::compareTo)
                 .ifPresent(date -> deadline = date);
+        done = source.isDone();
         tasks = getTasksSortedByDeadline(source);
     }
 
@@ -44,6 +46,14 @@ public class GroupReadModel {
 
     public void setDescription(final String description) {
         this.description = description;
+    }
+
+    public boolean isDone() {
+        return done;
+    }
+
+    public void setDone(final boolean done) {
+        this.done = done;
     }
 
     public LocalDateTime getDeadline() {

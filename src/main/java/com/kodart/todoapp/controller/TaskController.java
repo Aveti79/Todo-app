@@ -16,7 +16,6 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
@@ -31,7 +30,6 @@ class TaskController {
         this.service = service;
     }
 
-    //@RequestMapping(method = RequestMethod.GET, path = "/tasks")
     @GetMapping(params = {"!sort", "!page", "!size"})
     CompletableFuture<ResponseEntity<List<Task>>> readAllTasks() {
         logger.warn("Exposing all tasks!");
@@ -46,16 +44,9 @@ class TaskController {
 
     @GetMapping("/{id}")
     ResponseEntity<Task> readTask(@PathVariable int id) {
-        Optional<Task> taskOptional = repository.findById(id);
-        if (taskOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(taskOptional.get());
-    }
-
-    @GetMapping("/search/done")
-    ResponseEntity<List<Task>> readDoneTasks(@RequestParam(defaultValue = "true") boolean state) {
-        return ResponseEntity.ok(repository.findByDone(state));
+        return repository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/search/today")
@@ -79,21 +70,17 @@ class TaskController {
         return ResponseEntity.created(location).body(result);
     }
 
-    // #Pierwszy sposób, przy wykorzystaniu mądrzejszego controllera
-    @PutMapping("/{id}")
-    ResponseEntity<?> updateTask(@PathVariable int id, @RequestBody @Valid Task toUpdate) {
-        if (!repository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
+    @PutMapping(path = "/edit/{id}")
+    ResponseEntity<?> editTask(@PathVariable int id, @RequestBody @Valid Task toUpdate) {
         repository.findById(id)
                 .ifPresent(task -> {
+                    toUpdate.setGroup(task.getGroup());
                     task.updateFrom(toUpdate);
                     repository.save(task);
                 });
         return ResponseEntity.noContent().build();
     }
 
-    // #Drugi sposób, na wykonanie powyższej metody
     @Transactional
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateTask(@PathVariable int id) {

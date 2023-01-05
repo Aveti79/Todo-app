@@ -2,6 +2,8 @@ package com.kodart.todoapp.controller;
 
 import com.kodart.todoapp.logic.TaskGroupService;
 import com.kodart.todoapp.model.Task;
+import com.kodart.todoapp.model.TaskGroup;
+import com.kodart.todoapp.model.TaskGroupRepository;
 import com.kodart.todoapp.model.TaskRepository;
 import com.kodart.todoapp.model.projection.GroupReadModel;
 import com.kodart.todoapp.model.projection.GroupTaskWriteModel;
@@ -27,10 +29,12 @@ public class TaskGroupController {
     private static final Logger logger = LoggerFactory.getLogger(TaskController.class);
     private final TaskRepository repository;
     private final TaskGroupService service;
+    private final TaskGroupRepository taskGroupRepository;
 
-    public TaskGroupController(final TaskRepository repository, final TaskGroupService service) {
+    public TaskGroupController(final TaskRepository repository, final TaskGroupService service, final TaskGroupRepository taskGroupRepository) {
         this.repository = repository;
         this.service = service;
+        this.taskGroupRepository = taskGroupRepository;
     }
 
     /**
@@ -68,7 +72,7 @@ public class TaskGroupController {
         }
         service.createGroup(current);
         model.addAttribute("group", new GroupWriteModel());
-        model.addAttribute("groups", getGroups());
+        showGroups(model);
         model.addAttribute("message", "Utworzono grupę!");
         return "groups";
     }
@@ -96,12 +100,23 @@ public class TaskGroupController {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<GroupReadModel> postGroup(@RequestBody @Valid GroupWriteModel toPost) {
         GroupReadModel result = service.createGroup(toPost);
-        return ResponseEntity.created(URI.create("/"+result.getId())).body(result);
+        return ResponseEntity.created(URI.create("/" + result.getId())).body(result);
+    }
+
+    @ResponseBody
+    @PutMapping(path = "/edit/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> editTaskGroup(@PathVariable int id, @RequestBody @Valid TaskGroup toUpdate) {
+        taskGroupRepository.findById(id)
+                .ifPresent(taskGroup -> {
+                    taskGroup.updateFrom(toUpdate);
+                    taskGroupRepository.save(taskGroup);
+                });
+        return ResponseEntity.noContent().build();
     }
 
     @ResponseBody
     @Transactional
-    @PatchMapping(path = "/{id}", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PatchMapping(path = "/{id}")
     ResponseEntity<?> updateTaskGroup(@PathVariable int id) {
         service.toggleTaskGroup(id);
         return ResponseEntity.noContent().build();

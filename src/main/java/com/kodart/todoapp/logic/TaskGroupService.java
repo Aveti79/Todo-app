@@ -47,7 +47,8 @@ public class TaskGroupService {
         if(taskRepository.existsByDoneIsFalseAndGroup_Id(groupId)) {
             throw new IllegalStateException("You need to get done all tasks in group before group closing.");
         }
-        TaskGroup result = taskGroupRepository.findById(groupId).orElseThrow(() -> new IllegalArgumentException("TaskGroup with given Id doesn't exists."));
+        TaskGroup result = taskGroupRepository.findById(groupId).orElseThrow(
+                () -> new IllegalArgumentException("TaskGroup with given Id doesn't exists."));
         result.setDone(!result.isDone());
         taskGroupRepository.save(result);
     }
