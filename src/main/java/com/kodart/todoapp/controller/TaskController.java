@@ -70,6 +70,13 @@ class TaskController {
         return ResponseEntity.created(location).body(result);
     }
 
+    @DeleteMapping("/{id}")
+    ResponseEntity<?> deleteTask(@PathVariable int id) {
+        repository.findById(id).ifPresent(repository::delete);
+
+        return ResponseEntity.noContent().build();
+    }
+
     @PutMapping(path = "/edit/{id}")
     ResponseEntity<?> editTask(@PathVariable int id, @RequestBody @Valid Task toUpdate) {
         repository.findById(id)

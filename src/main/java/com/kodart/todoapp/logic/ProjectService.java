@@ -62,28 +62,10 @@ public class ProjectService {
                     return taskGroupService.createGroup(targetGroup, project);
                 }).orElseThrow(() -> new IllegalArgumentException("Project with given ID not found."));
     }
-    /*
-    public GroupReadModel createGroup(int projectId, LocalDateTime deadline) {
-        //Sprawdzamy, czy podstawowe warunki do stworzenia grupy z projektu zostały spełnione
-        if (!config.getTemplate().isAllowMultipleTasks() && taskRepository.existsByDoneIsFalseAndProject_Id(projectId)) {
-            throw new IllegalStateException("Only one undone group from project is allowed");
-        }
 
-        //Jeżeli poprzednio nie polecał wyjątek, przechodzę do tworzenia grupy
-        TaskGroup result = repository.findById(projectId)
-                .map(project -> {
-                    var targetGroup = new TaskGroup();
-                    targetGroup.setDescription(project.getDescription());
-                    targetGroup.setTasks(
-                            project.getSteps().stream()
-                            .map(projectStep -> new Task(
-                                        projectStep.getDescription(),
-                                        deadline.plusDays(projectStep.getDaysToDeadline()))
-                            ).collect(Collectors.toSet())
-                    );
-                    return targetGroup;
-                }).orElseThrow(() -> new IllegalArgumentException("Project with given ID not found."));
-        taskRepository.save(result);
-        return new GroupReadModel(result);
-    }*/
+    public void deleteProject(int projectId) {
+        Project project = repository.findById(projectId)
+                .orElseThrow(() -> new IllegalArgumentException("Project with given ID not found."));
+        repository.delete(project);
+    }
 }

@@ -3,7 +3,6 @@ package com.kodart.todoapp.model;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +23,7 @@ public interface TaskRepository {
 
     boolean existsByDoneIsFalseAndGroup_Id(Integer groupId);
 
-    List<Task> findByDone(@Param("state")boolean done);
+    void delete(Task entity);
 
     Task save(Task entity);
 }

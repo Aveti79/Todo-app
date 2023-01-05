@@ -5,6 +5,7 @@ import com.kodart.todoapp.model.Project;
 import com.kodart.todoapp.model.ProjectStep;
 import com.kodart.todoapp.model.projection.ProjectWriteModel;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -35,6 +36,12 @@ public class ProjectController {
         return "projects";
     }
 
+    @PostMapping(params = "removeStep", produces = MediaType.TEXT_HTML_VALUE)
+    String removeGroupTask(@ModelAttribute("project") ProjectWriteModel current, @RequestParam(value = "removeStep") int stepId) {
+        current.getSteps().remove(stepId);
+        return "projects";
+    }
+
     @PostMapping("/{id}")
     String createGroup(@ModelAttribute("project") ProjectWriteModel current,
                        Model model,
@@ -60,6 +67,14 @@ public class ProjectController {
         model.addAttribute("project", new ProjectWriteModel());
         model.addAttribute("projects", getProjects());
         model.addAttribute("message", "Dodano projekt!");
+        return "projects";
+    }
+
+    @DeleteMapping("/{id}")
+    String deleteProject (@PathVariable int id, Model model) {
+        service.deleteProject(id);
+        model.addAttribute("project", new ProjectWriteModel());
+        model.addAttribute("projects", getProjects());
         return "projects";
     }
 

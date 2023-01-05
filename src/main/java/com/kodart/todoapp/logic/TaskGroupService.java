@@ -52,4 +52,10 @@ public class TaskGroupService {
         result.setDone(!result.isDone());
         taskGroupRepository.save(result);
     }
+
+    public void deleteTaskGroup(int groupId) {
+        TaskGroup group = taskGroupRepository.findById(groupId)
+                .orElseThrow(() -> new IllegalArgumentException("TaskGroup with given Id doesn't exists."));
+        taskGroupRepository.delete(group);
+    }
 }

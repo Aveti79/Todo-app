@@ -190,5 +190,10 @@ class ProjectServiceTest {
                     .anyMatch(group -> group.getProject() != null
                             && group.getProject().getId() == projectId);
         }
+
+        @Override
+        public void delete(final TaskGroup entity) {
+
+        }
     }
 }

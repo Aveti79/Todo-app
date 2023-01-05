@@ -70,8 +70,8 @@ public class TestConfiguration {
             }
 
             @Override
-            public List<Task> findByDone(final boolean done) {
-                return null;
+            public void delete(final Task entity) {
+
             }
 
             @Override

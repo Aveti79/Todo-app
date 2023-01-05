@@ -77,6 +77,14 @@ public class TaskGroupController {
         return "groups";
     }
 
+    @DeleteMapping("/{id}")
+    String deleteGroup (@PathVariable int id, Model model) {
+        service.deleteTaskGroup(id);
+        model.addAttribute("group", new GroupWriteModel());
+        model.addAttribute("groups", getTaskGroups());
+        return "groups";
+    }
+
     @ModelAttribute("groups")
     List<GroupReadModel> getTaskGroups() {
         return service.readAndSortTasksGroupsByDeadline();
