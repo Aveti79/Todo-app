@@ -2,7 +2,10 @@ package com.kodart.todoapp.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "projects")
@@ -50,5 +53,19 @@ public class Project {
 
     public void setSteps(final Set<ProjectStep> steps) {
         this.steps = steps;
+    }
+
+    public List<ProjectStep> getStepsSortedByDaysToDD() {
+        return getSteps().stream()
+                .sorted(Comparator.comparing(ProjectStep::getDaysToDeadline,
+                        Comparator.reverseOrder()))
+                .collect(Collectors.toList());
+    }
+
+    @PreRemove
+    private void preRemove() {
+        for (TaskGroup taskGroup: getTaskGroups()) {
+            taskGroup.setProject(null);
+        }
     }
 }

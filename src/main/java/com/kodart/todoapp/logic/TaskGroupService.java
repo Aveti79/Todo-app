@@ -7,6 +7,7 @@ import com.kodart.todoapp.model.TaskRepository;
 import com.kodart.todoapp.model.projection.GroupReadModel;
 import com.kodart.todoapp.model.projection.GroupWriteModel;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,14 @@ public class TaskGroupService {
         return taskGroupRepository.findAll().stream()
                 .map(GroupReadModel::new)
                 .collect(Collectors.toList());
+    }
+
+    public List<GroupReadModel> readAndSortTasksGroupsByDeadline() {
+        return readAll().stream().sorted(
+                Comparator.comparing(
+                        GroupReadModel::getDeadline, Comparator.nullsFirst(
+                                Comparator.naturalOrder()))).
+                collect(Collectors.toList());
     }
 
     public void toggleTaskGroup(int groupId) {

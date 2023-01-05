@@ -4,6 +4,7 @@ import com.kodart.todoapp.model.Task;
 import com.kodart.todoapp.model.TaskGroup;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -26,10 +27,7 @@ public class GroupReadModel {
                 .filter(Objects::nonNull)
                 .max(LocalDateTime::compareTo)
                 .ifPresent(date -> deadline = date);
-        tasks = source.getTasks()
-                .stream()
-                .map(GroupTaskReadModel::new)
-                .collect(Collectors.toList());
+        tasks = getTasksSortedByDeadline(source);
     }
 
     public int getId() {
@@ -62,5 +60,13 @@ public class GroupReadModel {
 
     public void setTasks(final List<GroupTaskReadModel> tasks) {
         this.tasks = tasks;
+    }
+
+    public List<GroupTaskReadModel> getTasksSortedByDeadline(TaskGroup source) {
+        return source.getTasks().stream().sorted(
+                Comparator.comparing(Task::getDeadline,
+                        Comparator.nullsFirst(
+                                Comparator.naturalOrder()))).
+                map(GroupTaskReadModel::new).collect(Collectors.toList());
     }
 }

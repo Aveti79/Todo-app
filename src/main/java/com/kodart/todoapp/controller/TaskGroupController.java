@@ -18,9 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/groups")
@@ -35,9 +33,17 @@ public class TaskGroupController {
         this.service = service;
     }
 
+    /**
+     * String showGroups(@ModelAttribute("group") GroupWriteModel groupWriteModel)
+     * is the same as
+     * String showGroups(Model model) {
+     * model.addAttribute("group", new GroupWriteModel());
+     * }
+     */
     @GetMapping(produces = MediaType.TEXT_HTML_VALUE)
     String showGroups(Model model) {
         model.addAttribute("group", new GroupWriteModel());
+        model.addAttribute("groups", service.readAndSortTasksGroupsByDeadline());
         return "groups";
     }
 
@@ -55,8 +61,8 @@ public class TaskGroupController {
 
     @PostMapping(consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.TEXT_HTML_VALUE)
     String addGroup(@ModelAttribute("group") @Valid GroupWriteModel current,
-                      BindingResult result,
-                      Model model) {
+                    BindingResult result,
+                    Model model) {
         if (result.hasErrors()) {
             return "groups";
         }
@@ -68,17 +74,8 @@ public class TaskGroupController {
     }
 
     @ModelAttribute("groups")
-    List<GroupReadModel> getGroups() {
-        return service.readAll();
-    }
-
-    @ModelAttribute("sortTasks")
-    List<GroupTaskWriteModel> sortTasksInGroupByDeadline(GroupWriteModel current) {
-        return current.getTasks().stream().sorted(
-                Comparator.comparing(GroupTaskWriteModel::getDeadline,
-                    Comparator.nullsFirst(
-                        Comparator.naturalOrder())))
-                .collect(Collectors.toList());
+    List<GroupReadModel> getTaskGroups() {
+        return service.readAndSortTasksGroupsByDeadline();
     }
 
     @ResponseBody
