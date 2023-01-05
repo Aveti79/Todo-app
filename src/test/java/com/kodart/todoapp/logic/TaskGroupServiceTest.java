@@ -21,8 +21,9 @@ class TaskGroupServiceTest {
     void toggleGroup_undoneGroupExists_with_givenId_throwsIllegalStateException() {
         //given
         var mockTaskRepository = getMockTaskRepository(true);
+        var mockTaskGroupRepo = mock(TaskGroupRepository.class);
         //SystemUnderTest
-        var toTest = new TaskGroupService(null, mockTaskRepository);
+        var toTest = new TaskGroupService(mockTaskGroupRepo, mockTaskRepository);
         //when
         var exception = catchThrowable(() -> toTest.toggleTaskGroup(1));
         //then
