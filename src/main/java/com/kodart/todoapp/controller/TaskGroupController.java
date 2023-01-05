@@ -105,6 +105,17 @@ public class TaskGroupController {
     }
 
     @ResponseBody
+    @PostMapping(path = "/{id}/tasks", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> addTaskToGroup(@RequestBody Task toPost, @PathVariable int id) {
+        taskGroupRepository.findById(id).ifPresent(taskGroup -> {
+            toPost.setGroup(taskGroup);
+            taskGroup.getTasks().add(toPost);
+            taskGroupRepository.save(taskGroup);
+        });
+        return ResponseEntity.created(URI.create("/groups/" + id)).body(taskGroupRepository.findById(id));
+    }
+
+    @ResponseBody
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<GroupReadModel> postGroup(@RequestBody @Valid GroupWriteModel toPost) {
         GroupReadModel result = service.createGroup(toPost);
@@ -133,12 +144,14 @@ public class TaskGroupController {
     @ResponseBody
     @ExceptionHandler(IllegalArgumentException.class)
     ResponseEntity<String> handleIllegalArgument(IllegalArgumentException e) {
+        logger.info(e.getMessage());
         return ResponseEntity.notFound().build();
     }
 
     @ResponseBody
     @ExceptionHandler(IllegalStateException.class)
-    ResponseEntity<String> handleIllegalState(IllegalStateException e) {
+    ResponseEntity<?> handleIllegalState(IllegalStateException e) {
+        logger.info(e.getMessage());
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 

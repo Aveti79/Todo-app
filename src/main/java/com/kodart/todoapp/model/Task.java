@@ -38,7 +38,7 @@ public class Task extends BaseTask {
         return deadline;
     }
 
-    void setDeadline(final LocalDateTime deadline) {
+    public void setDeadline(final LocalDateTime deadline) {
         this.deadline = deadline;
     }
 
@@ -46,7 +46,7 @@ public class Task extends BaseTask {
         return group;
     }
 
-    void setGroup(final TaskGroup group) {
+    public void setGroup(final TaskGroup group) {
         this.group = group;
     }
 
