@@ -4,6 +4,10 @@ server:
     include-binding-errors: always
     include-message: always
 spring:
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
   profiles:
     active: local
   #Wyłączam standardowy banner Springa

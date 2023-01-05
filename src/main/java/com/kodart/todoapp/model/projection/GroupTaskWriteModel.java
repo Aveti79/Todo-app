@@ -5,11 +5,13 @@ import com.kodart.todoapp.model.TaskGroup;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 public class GroupTaskWriteModel {
     @NotBlank(message = "Task's description can't be empty.")
     private String description;
+    @NotNull(message = "Deadline can't be empty.")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime deadline;
 
