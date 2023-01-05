@@ -1,5 +1,6 @@
 package com.kodart.todoapp.controller;
 
+import com.kodart.todoapp.logic.TaskService;
 import com.kodart.todoapp.model.Task;
 import com.kodart.todoapp.model.TaskRepository;
 import org.junit.jupiter.api.Test;
@@ -19,12 +20,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 @WebMvcTest(TaskController.class)
-public class TaskContollerLightIntegrationTest {
+public class TaskControllerLightIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
     private TaskRepository repository;
+
+    @MockBean
+    private TaskService service;
 
     @Test
     void httpGet_returnGivenTask() throws Exception {
