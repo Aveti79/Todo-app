@@ -4,37 +4,135 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo App: groups</title>
-    <link rel="stylesheet" href="https://igoradamenko.github.io/awsm.css/css/awsm.min.css">
+    <link rel="stylesheet" href="https://igoradamenko.github.io/awsm.css/css/awsm_theme_mischka.css">
+    <style>
+        nav {
+            border-bottom: 1px solid black;
+        }
+
+        .C\(red\) {
+            color: red;
+        }
+
+        .crumbs ol {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .crumb {
+            display: inline-block;
+        }
+
+        .crumb a::after {
+            display: inline-block;
+            color: #000;
+            content: '>';
+            font-size: 80%;
+            font-weight: bold;
+            padding: 0 3px;
+        }
+
+        .functionButton {
+            float: right;
+            padding: 0 0 0 0;
+            display: inline;
+            width: 25px;
+            height: 25px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: none;
+            border-radius: 25%;
+            border: none;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .functionButton:not([disabled]):hover {
+            color: black;
+            background: darkgray;
+            border: none;
+        }
+
+        small {
+            font-weight: 500;
+        }
+
+        .editForm {
+            max-width: 100%;
+            display: flex;
+            gap: 8px;
+        }
+
+        .editInput {
+            height: 1.6em !important;
+            font-size: 0.9em !important;
+            margin-bottom: 0 !important;
+        }
+
+        .editButton {
+            display: inline-flex;
+            align-items: center;
+        }
+    </style>
 </head>
 <body>
+<nav class="crumbs">
+    <ol>
+        <li class="crumb"> <a href="/">Home</a></li>
+        <li class="crumb"> <a href="/groups">Task Groups</a></li>
+        <li class="crumb">Tasks</li>
+    </ol>
+</nav>
 <main>
     <fieldset>
         <form>
-            <label>Opis
+            <label>Description
                 <input type="text" name="description" />
             </label>
             <label>Deadline
                 <input type="datetime-local" name="deadline" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}" />
             </label>
-            <button type="submit">Dodaj!</button>
+            <button type="submit">Add</button>
         </form>
     </fieldset>
 </main>
 <script>
     (async function() {
+        // Pobieram tag <main>
         const main = document.querySelector('main');
+        // Deklaruje zmienną params i inzcjalizuję w niej URLSearchParams wsyłając zapytaniue do URL po " ? "
         const params = new URLSearchParams(location.search);
+        // Deklaruje zmienną response i nadeję jej wartość przy pomocy operatora trójskładnikowego " ? "
+        // Jeżeli warunek jest spełniony zapisywane jest pozytywny Promise, w przeciwnym wypadku negatywny
         const response = params.has('group') ? await fetch(`/groups/${params.get('group')}`) : await fetch('/tasks');
+        // Jeżeli został zwrócony pozytywny promise dla response to wykonywana jest poniższa instrukcja warunkowa
         if (response.ok) {
+            // Pobieram listę tasków w formacie JSON
             const tasks = await response.json();
+            // Tworzę listę elementów <ul> w htmlu
             const list = document.createElement('ul');
+            // Teraz dla każdego taska wywułuję metodę, w której dodaje tego taska do listy
             tasks.forEach(task => list.appendChild(createTask(task)));
+            // Dodajemy naszą utworzoną listę na początku za znacznikiem main
             main.prepend(list);
         }
         const form = document.querySelector('form');
         form.addEventListener('submit', async (event) => {
             event.preventDefault();
-            const resp = await fetch('/tasks', {
+            console.log(params.get('group'));
+            const resp = params.has('group') ? await fetch('/groups/'+params.get('group')+'/tasks', {
+                method: 'post',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    description: form.elements.description.value,
+                    deadline: form.elements.deadline.value && form.elements.deadline.value + ':00.000',
+                    group: params.get('group')
+                })
+            }) : await fetch('/tasks', {
                 method: 'post',
                 headers: {
                     'Accept': 'application/json',
@@ -49,6 +147,7 @@
                 const taskFromServer = await resp.json();
                 document.querySelector('ul').appendChild(createTask(taskFromServer));
                 form.reset();
+                window.location.reload();
             }
         });
 
@@ -57,8 +156,16 @@
             result.innerHTML = `
                 <label>
                     <input type="checkbox" ${done ? ' checked' : ''}/>
-                    ${description}
+                    <div style="display: inline-block">${description}</div>
                     <small>${deadline && deadline.replace('T', ' ')}</small>
+                    <button type="button" id="editBtn${id}" class="functionButton" title="Edit task"
+                        onclick="editTask(id)">
+                         <ion-icon name="create-outline"></ion-icon>
+                    </button>
+                    <button type="button" id="deleteBtn${id}" class="functionButton" title="Delete task"
+                        onclick="deleteTask(id)">
+                         <ion-icon name="trash-outline"></ion-icon>
+                    </button>
                 </label>
             `;
             result.querySelector('input').addEventListener('click', async (e) => {
@@ -70,6 +177,79 @@
             return result;
         }
     })();
+
+    function editTask(id) {
+        const taskLabel = document.getElementById(id).parentNode;
+        const taskDesc = taskLabel.querySelector('div');
+        const taskDeadline = taskLabel.querySelector('small');
+        const taskDone = taskLabel.querySelector('input[type=checkbox]').checked;
+        const taskId = id.replace('editBtn', '');
+        console.log(taskDeadline);
+
+        const form = document.createElement('form');
+        form.className = 'editForm';
+        form.innerHTML =
+            `<input type="checkbox" name="taskStatus" ${taskDone ? ' checked' : ''} class="editInput">
+             <input type="text" name="descriptionInput" value="${taskDesc.textContent}" class="editInput">
+             <input type="datetime-local" name="deadlineInput" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}"
+                    value="${taskDeadline.textContent.replace(' ', 'T').slice(0,-3)}" class="editInput">
+             <button type="submit" class="editInput editButton">Zapisz</button>
+             <button type="reset" class="editInput editButton">Anuluj</button>`
+
+        taskLabel.parentNode.replaceChild(form, taskLabel);
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const resp = await fetch(`tasks/edit/` + taskId, {
+                method: 'put',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    done: form.querySelector('input[type=checkbox]').checked,
+                    description: form.elements.namedItem("descriptionInput").value,
+                    deadline: form.elements.namedItem("deadlineInput").value
+                })
+            });
+
+            if (resp.ok) {
+                document.location.reload();
+            } else if (!resp.ok) {
+                const errorMsg = JSON.parse(await resp.text())["errors"][0]["defaultMessage"];
+                const errorMsgElement = document.createElement("div");
+                errorMsgElement.textContent = errorMsg;
+                errorMsgElement.className = "C(red)";
+                if (!form.previousSibling.isEqualNode(errorMsgElement)) {
+                    form.before(errorMsgElement);
+                } else if (errorMsg.style.display === 'none') {
+                    errorMsgElement.style.display = 'true';
+                }
+                setTimeout(() => {
+                    errorMsgElement.style.display = 'none'
+                }, 5000);
+            }
+        });
+
+        form.addEventListener('reset', () => {
+            document.location.reload();
+        });
+    }
+
+    async function deleteTask(id) {
+        const taskId = id.replace('deleteBtn', '');
+        const deleteButton = document.getElementById(id);
+        const taskDesc = deleteButton.parentNode.querySelector('div').textContent;
+        console.log(deleteButton);
+        if (confirm("Do you want to delete task \"" + taskDesc + "\"?") === true) {
+            const resp = await fetch(`tasks/` + taskId, {method: 'delete'});
+            if (resp.ok) {
+                document.location.reload();
+            }
+        }
+    }
 </script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 </body>
 </html>

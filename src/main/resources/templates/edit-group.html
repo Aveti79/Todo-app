@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="x-iso-8859-11">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit group</title>
+    <link rel="stylesheet" href="https://igoradamenko.github.io/awsm.css/css/awsm_theme_mischka.css">
+</head>
+<body>
+<main>
+        <legend>Edytuj grupę</legend>
+        <form>
+            <fieldset>
+                <label>Opis
+                    <input type="text"/>
+                </label>
+                <label>Deadline
+                    <input type="datetime-local" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}" required/>
+                </label>
+                <button type="submit" name="removeTask">-</button>
+            </fieldset>
+            <div>
+                <button type="submit" name="addTask">+</button>
+            </div>
+            <p>
+                <button type="submit">Dodaj</button>
+                <button type="reset">Wyczyść</button>
+            </p>
+        </form>
+</main>
+<script>
+    (async function () {
+        // Pobieram tag <main>
+        let main;
+        main = document.querySelector('main');
+        // Deklaruje zmienną params i inzcjalizuję w niej URLSearchParams wsyłając zapytaniue do URL po " ? "
+        let params;
+        params = new URLSearchParams(location.search);
+        // Deklaruje zmienną response i nadeję jej wartość przy pomocy operatora trójskładnikowego " ? "
+        // Jeżeli warunek jest spełniony zapisywane jest pozytywny Promise, w przeciwnym wypadku negatywny
+        const response = params.has('group') ? await fetch(`/groups/edit-group?group=${params.get('group')}`) : await fetch('/groups');
+        // Jeżeli został zwrócony pozytywny promise dla response to wykonywana jest poniższa instrukcja warunkowa
+        if (response.ok) {
+            // Pobieram listę tasków w formacie JSON
+            const tasks = await response.json();
+            const list = document.createElement('dl');
+            tasks.forEach((task) => list.appendChild(createTask(task)));
+            main.append(list);
+        }
+
+        function createTask({id, description, deadline, done}) {
+            const result = document.createElement('form');
+            result.innerHTML=`
+        <input type="text" value="${description}"/>
+        <input type="datetime-local" value="${deadline}"/>
+        `;
+            return result;
+        }
+    }());
+</script>
+</body>
+</html>

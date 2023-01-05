@@ -10,10 +10,10 @@
             border: solid 1px black;
         }
         .Bdc\(red\) {
-            border-color: red !important;
+            border-color: darkred !important;
         }
         .C\(red\) {
-            color: red;
+            color: darkred;
         }
         .P\(0\) {
             padding: 0;
@@ -21,23 +21,83 @@
         .P\(10\) {
             padding: 10px;
         }
+
+        .removeButton {
+            float: right;
+            padding: 0 0 0 0;
+            display: inline-block;
+            width: 25px;
+            height: 25px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: none;
+            border-radius: 25%;
+            border: none;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .removeButton:not([disabled]):hover {
+            color: black;
+            background: darkgray;
+            border: none;
+        }
+
+        ion-icon {
+            pointer-events: none;
+            font-size: larger;
+        }
+
+        nav {
+            border-bottom: 1px solid black;
+        }
+
+        .crumbs ol {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .crumb {
+            display: inline-block;
+        }
+
+        .crumb a::after {
+            display: inline-block;
+            color: #000;
+            content: '>';
+            font-size: 80%;
+            font-weight: bold;
+            padding: 0 3px;
+        }
     </style>
 </head>
 <body>
+<nav class="crumbs">
+    <ol>
+        <li class="crumb"> <a href="/">Home</a></li>
+        <li class="crumb"> <a href="/projects">Projects</a></li>
+    </ol>
+</nav>
 <main>
     <h1 th:if="${message != null}" th:text="${message}"></h1>
     <!--/*@thymesVar id="projects" type="java.util.List<kodart.todoapp.model.Project>"*/-->
     <dl th:each="project : ${projects}" class="Bd P(10)">
+        <form action="#" th:method="delete" th:action="@{/projects/{projectId}(projectId=${project.id})}">
+            <button type="submit" id="deleteButton" class="removeButton">
+                <ion-icon name="trash-outline"></ion-icon>
+            </button>
+        </form>
         <dt th:text="${project.description}">...</dt>
         <dd>
             <ul class="P(0)">
-                <li th:each="step : ${project.steps}" th:text="|${step.description} (${step.daysToDeadline} dni)|">
+                <li th:each="step : ${project.getStepsSortedByDaysToDD()}" th:text="|${step.description} (${step.daysToDeadline} dni)|">
             </ul>
             <form action="#" method="post" th:action="@{/projects/{projectId}(projectId=${project.id})}">
                 <label>Deadline
                     <input name="deadline" type="datetime-local" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}" required>
                 </label>
-                <button type="submit">Utwórz taski >></button>
+                <button type="submit">Create tasks >></button>
             </form>
         </dd>
     </dl>
@@ -47,27 +107,35 @@
         <form action="#" method="post" th:action="@{/projects}" th:object="${project}">
             <p class="C(red)" th:if="${#fields.hasAnyErrors()}" th:errors="*{all}"></p>
             <label>
-                Opis
+                Project description
                 <input type="text" th:field="*{description}" th:errorclass="'Bdc(red)'"/>
             </label>
             <fieldset th:each="step, stepStat: *{steps}">
                 <legend th:text="|Krok ${stepStat.index + 1}|"></legend>
-                <label>Opis
+                <button type="submit" name="removeStep" th:value="${stepStat.index}" class="removeButton" title="Remove step">
+                    <ion-icon name="trash-outline"></ion-icon>
+                </button>
+                <label style="display: inline">Task description
                     <input type="text" th:field="*{steps[__${stepStat.index}__].description}" th:errorclass="'Bdc(red)'"/>
                 </label>
-                <label>Dni do końca projektu
+                <label>Task deadline
                     <input type="number" th:field="*{steps[__${stepStat.index}__].daysToDeadline}" th:errorclass="'Bdc(red)'"/>
                 </label>
             </fieldset>
-            <div>
-                <button type="submit" name="addStep">+</button>
-            </div>
             <p>
-                <button type="submit">Dodaj</button>
-                <button type="reset">Wyczyść</button>
+                <button type="submit" id="addStepButton" name="addStep">Add step</button>
+            </p>
+            <p>
+                <button type="submit">Add project</button>
+                <button type="reset">Clear form</button>
             </p>
         </form>
     </fieldset>
 </main>
+<script>
+
+</script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 </body>
 </html>

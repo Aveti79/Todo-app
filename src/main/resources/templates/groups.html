@@ -29,27 +29,90 @@
         .P\(10\) {
             padding: 10px;
         }
+
+        .functionButton {
+            float: right;
+            padding: 0 0 0 0;
+            display: inline;
+            width: 25px;
+            height: 25px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: none;
+            border-radius: 25%;
+            border: none;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .functionButton:not([disabled]):hover {
+            color: black;
+            background: darkgray;
+            border: none;
+        }
+
+        ion-icon {
+            pointer-events: none;
+            font-size: larger;
+        }
+
+        nav {
+            border-bottom: 1px solid black;
+        }
+
+        .crumbs ol {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .crumb {
+            display: inline-block;
+        }
+
+        .crumb a::after {
+            display: inline-block;
+            color: #000;
+            content: '>';
+            font-size: 80%;
+            font-weight: bold;
+            padding: 0 3px;
+        }
     </style>
 </head>
 <body>
+<nav class="crumbs">
+    <ol>
+        <li class="crumb"><a href="/">Home</a></li>
+        <li class="crumb"><a href="/groups">Task Groups</a></li>
+    </ol>
+</nav>
 <main>
     <h1 th:if="${message != null}" th:text="${message}"></h1>
     <!--/*@thymesVar id="groups" type="java.util.List<com.kodart.todoapp.model.projection.GroupReadModel>"*/-->
     <dl th:each="group : ${groups}" class="Bd P(10)">
         <dt>
             <label>
-                <input type="checkbox"/>
+                <input type="checkbox" th:id="${group.id}" th:checked="${group.done}"/>
                 <span th:text="${group.description}"></span>
-                <small th:text="|(${group.deadline})|"></small>
+                <small id="deadlineText" th:text="|(${group.deadline})|"/>
+                <button type="button" th:id="|edit${group.id}|" class="functionButton" title="Edit group"
+                        onclick="editTaskGroup(id)">
+                    <ion-icon name="create-outline"></ion-icon>
+                </button>
+                <button type="button" th:id="|deleteBtn${group.id}|" class="functionButton" title="Delete group"
+                        onclick="deleteGroup(id)">
+                    <ion-icon name="trash-outline"></ion-icon>
+                </button>
             </label>
             <hr class="M(0)"/>
         </dt>
         <dd>
-            <a th:href="@{/tasks.html(group=${group.id})}">
+            <a id="tasksRef" th:href="@{/tasks.html(group=${group.id})}">
                 <ul class="P(0)">
                     <li th:each="task : ${group.tasks}">
-                        <span th:unless="${task.done}" th:text="${task.description}"></span>
-                        <del th:if="${task.done}" th:text="${task.description}"></del>
+                        <span id="taskDesc" th:unless="${task.done}" th:text="${task.description}"></span>
+                        <del id="taskDescDel" th:if="${task.done}" th:text="${task.description}"></del>
                     </li>
                 </ul>
             </a>
@@ -66,19 +129,21 @@
             </label>
             <fieldset th:each="task, taskStat: *{tasks}">
                 <legend th:text="|Zadanie ${taskStat.index + 1}|"></legend>
-                <label>Opis
+                <button type="submit" name="removeTask" th:value="${taskStat.index}" class="functionButton">
+                    <ion-icon name="trash-outline"></ion-icon>
+                </button>
+                <label style="display: inline">Opis
                     <input type="text" th:field="*{tasks[__${taskStat.index}__].description}"
                            th:errorclass="'Bdc(red)'"/>
                 </label>
                 <label>Deadline
                     <input type="datetime-local" th:field="*{tasks[__${taskStat.index}__].deadline}"
-                           th:errorclass="'Bdc(red)'" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}" required/>
+                           th:errorclass="'Bdc(red)'" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}"/>
                 </label>
-                <button type="submit" name="removeTask" th:value="${taskStat.index}">-</button>
             </fieldset>
-            <div>
-                <button type="submit" name="addTask">+</button>
-            </div>
+            <p>
+                <button type="submit" name="addTask">Add task</button>
+            </p>
             <p>
                 <button type="submit">Dodaj</button>
                 <button type="reset">Wyczyść</button>
@@ -86,5 +151,124 @@
         </form>
     </fieldset>
 </main>
+<script>
+    function addTask() {
+        const addTaskBtn = document.getElementById("addTask");
+        const form = addTaskBtn.parentNode.parentNode;
+        console.log(addTaskBtn)
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const resp = await fetch(`groups?addTask`, {method: 'get'});
+            if (resp.ok) {
+                window.location.reload();
+            }
+        });
+    }
+
+    function editTaskGroup(id) {
+        const taskGroupId = id.replace('edit', '');
+        const groupLabel = document.getElementById(id).parentNode;
+        const groupDescription = groupLabel.querySelector('span');
+        groupLabel.querySelector('.functionButton').style.display = 'none';
+        const form = document.createElement('form');
+        form.innerHTML =
+            `<input type="text" name="descriptionInput" value="${groupDescription.textContent}">
+             <button type="submit">Zapisz</button>
+             <button type="reset">Anuluj</button>`;
+
+        groupLabel.prepend(form);
+
+        form.addEventListener('submit',
+            async (event) => {
+                event.preventDefault();
+                const resp = await fetch(`groups/edit/` + taskGroupId, {
+                    method: 'put',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        description: form.elements.namedItem("descriptionInput").value,
+                        done: groupLabel.querySelector('input[type=checkbox]').checked
+                    })
+                });
+
+                if (resp.ok) {
+                    document.location.reload();
+                } else if (!resp.ok) {
+                    const errorMsg = JSON.parse(await resp.text())["errors"][0]["defaultMessage"];
+                    const errorMsgElement = document.createElement("div");
+                    errorMsgElement.textContent = errorMsg;
+                    errorMsgElement.className = "C(red)";
+                    if (!groupLabel.firstChild.isEqualNode(errorMsgElement)) {
+                        groupLabel.prepend(errorMsgElement);
+                    } else if (errorMsg.style.display === 'none') {
+                        errorMsgElement.style.display = 'true';
+                    }
+                    setTimeout(() => {
+                        errorMsgElement.style.display = 'none'
+                    }, 5000);
+                }
+            }
+        )
+
+        form.addEventListener('reset', (event) => {
+            event.preventDefault();
+            document.location.reload();
+        })
+    }
+
+    async function deleteGroup(id) {
+        const taskGroupId = id.replace('deleteBtn', '');
+        const deleteButton = document.getElementById(id);
+        const taskGroupDesc = deleteButton.parentNode.querySelector('span').textContent;
+        console.log(deleteButton);
+        if (confirm("Do you want to delete group " + taskGroupDesc + "?") === true) {
+            const resp = await fetch(`groups/` + taskGroupId, {method: 'delete'});
+            if (resp.ok) {
+                document.location.reload();
+            }
+        }
+    }
+
+    const deadlines = document.querySelectorAll('#deadlineText');
+    deadlines.forEach(deadline => {
+        if (!deadline.textContent.includes('(null)')) {
+            deadline.innerHTML = deadline.textContent.replace('T', ' ');
+        }
+    });
+
+    const checkboxes = document.querySelectorAll('input[type=checkbox]');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            updateTaskGroupStatus(checkbox.id);
+        });
+    })
+
+    async function updateTaskGroupStatus(id) {
+        const checkbox = document.getElementById(id);
+        const result = await fetch(`groups/` + id, {method: 'PATCH'})
+
+        if (!result.ok) {
+            checkbox.checked = !checkbox.checked;
+            const errorText = await result.text();
+            const label = checkbox.parentNode;
+            const errorMsg = document.createElement('div');
+            errorMsg.textContent = errorText;
+            errorMsg.innerHTML = errorMsg.textContent.replace('Error:', '');
+            errorMsg.className = "C(red)";
+            if (!label.parentNode.firstChild.isEqualNode(errorMsg)) {
+                label.parentNode.prepend(errorMsg);
+            } else if (errorMsg.style.display === 'none') {
+                errorMsg.style.display = 'true';
+            }
+            setTimeout(() => {
+                errorMsg.style.display = 'none'
+            }, 5000);
+        }
+    }
+</script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 </body>
 </html>
