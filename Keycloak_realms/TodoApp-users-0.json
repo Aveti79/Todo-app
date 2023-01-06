@@ -1,0 +1,70 @@
+{
+  "realm" : "TodoApp",
+  "users" : [ {
+    "id" : "687eb6ad-56a8-4385-a455-e533f4663e79",
+    "createdTimestamp" : 1673012217344,
+    "username" : "admin",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "firstName" : "Foo",
+    "lastName" : "Bar",
+    "credentials" : [ {
+      "id" : "f82f7e4b-3c05-4065-82b4-3a9426b38774",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1673012243241,
+      "secretData" : "{\"value\":\"xPcTjfkAGOPOorgFehBwMBnw/ZhmM7qG97dJGgxnu08WHEMH2W6NqXTPrRC0yqtYRy7gGFevkgYMPtgdWv39Qw==\",\"salt\":\"gmaMiLdkoqKzB/8/OHZ2Yg==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-todoapp" ],
+    "notBefore" : 0,
+    "groups" : [ "/Admin" ]
+  }, {
+    "id" : "736807e1-c162-43de-885f-85e006ea5430",
+    "createdTimestamp" : 1662114290170,
+    "username" : "admin1",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "firstName" : "Johny",
+    "lastName" : "Dubanovski",
+    "credentials" : [ {
+      "id" : "54eeaf90-69a5-4d5c-a699-dbf5569d0e9f",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1669989395675,
+      "secretData" : "{\"value\":\"U1vAPzA2KfD9d8L992p7EKtX2ITdN3ia8XiW80h4HVQH3AIlM8F3M2TcoLhGL6J1EjCknAOUMmtFIVWgkyZtEQ==\",\"salt\":\"LRLEn8Z7OM3fdViTEZQv1g==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-todoapp" ],
+    "notBefore" : 0,
+    "groups" : [ "/Admin" ]
+  }, {
+    "id" : "c1dacde4-6082-4403-94f5-29d1f58d905d",
+    "createdTimestamp" : 1662114142254,
+    "username" : "user",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "firstName" : "FirstName",
+    "lastName" : "LastName",
+    "credentials" : [ {
+      "id" : "e93e4f0e-24f6-4ea7-837d-8b20c733c7da",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1669989269168,
+      "secretData" : "{\"value\":\"asY/BgotbI827UVAHXSrJtE8dycbXGot2M7wOpoEic2bI+9ajpGbv/pWENgwlaTHwQlLSVf7y+wE/i+R3Nnnbg==\",\"salt\":\"Q9IEAk3865uZT9n0x2rATg==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-todoapp" ],
+    "notBefore" : 0,
+    "groups" : [ "/User" ]
+  } ]
+}

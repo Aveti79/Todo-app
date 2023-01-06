@@ -1,0 +1,26 @@
+{
+  "realm" : "master",
+  "users" : [ {
+    "id" : "99a4bccd-ed32-4695-9b63-67ecf1b2b7da",
+    "createdTimestamp" : 1661959148254,
+    "username" : "admin",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "credentials" : [ {
+      "id" : "a4e90dbd-55c8-4ee9-8007-aa9060d9b0b0",
+      "type" : "password",
+      "createdDate" : 1661959148372,
+      "secretData" : "{\"value\":\"1ky0YuX8n139UOAe6Bh9u2cZgI6tP6HsLAR8y/fg6maPwQV8eRLzcSjDmDD92V/+AyKP+yFKR/v4180b+i87og==\",\"salt\":\"EF21RlgsbHBNRvxeEGA/Cg==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "admin", "default-roles-master" ],
+    "clientRoles" : {
+      "TodoApp-realm" : [ "query-users", "view-clients", "manage-clients", "manage-authorization", "query-groups", "view-identity-providers", "manage-realm", "create-client", "manage-identity-providers", "view-realm", "manage-events", "view-authorization", "view-users", "view-events", "manage-users", "query-clients", "query-realms" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  } ]
+}
